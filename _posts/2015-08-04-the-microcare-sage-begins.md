@@ -51,9 +51,10 @@ clearly been subjected to more heat than was healthy for it.
 ## Replace or repair again?
 
 At this point I fire off another email to Microcare HQ. It's met with deafening
-silence as before. I've now lost trust in this unit, so I go out and buy a new
-Victron Blue Solar 150/70. It costs almost double what the Microcare unit costs,
-but this really is the best there is.
+silence as before (Edit: They have since replied, but since I've already
+embarked on my own adventure, I have not). I've now lost trust in this unit, so
+I go out and buy a new Victron Blue Solar 150/70. It costs almost double what
+the Microcare unit costs, but this really is the best there is.
 
 Not wanting to waste more money on couriers, I decide to take a stab at
 figuring out what went wrong.
