@@ -21,9 +21,10 @@ differently.  It seems I will never know.
 
 If the only problem is the blown DC-DC stage, I should be able to get it
 working by temporarily driving it from an external power supply. So this
-is what I did. Only problem was, the various 12V SLA batteries I have are
-all completely destroyed, so I had to resort to using a vehicle battery. At
-least this meant it came with built-in loads: Vehicle lights.
+is what I did. Only problem was, the various 12V SLA batteries I have standing
+around the house are all completely destroyed, so I had to resort to using a
+vehicle battery. At least this meant it came with built-in loads: Vehicle
+lights.
 
 Here then, if you will excuse the horrible Wikus-van-der-Merwe South African
 accent, a short video of my test.
@@ -51,7 +52,7 @@ average value measured with a multimeter.
 ## Next steps
 
 The last of my ordered parts arrived yesterday, specifically, a package with
-one small component: A Murata CMR0515S3C. This is a little DC-DC inverter
+one small component: A Murata CMR0515S3C. This is a little DC-DC converter
 in a single package. It's overkill for what I need: It has both a positive and
 negative 15V supply. The load regulation and ripple looks good enough that it
 can simply replace the entire chain of components including the 78L15.
