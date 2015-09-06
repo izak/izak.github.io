@@ -30,7 +30,7 @@ a 10uF on the output side, which I will keep. Once again the data sheet says
 
 Finally, here it is installed. It's wired directly into the holes of the old
 converter, with the output 0V and 15V lines going into the pins formerly
-occupied by the 78L05. The only problem was that there is no easy place to
+occupied by the 78L15. The only problem was that there is no easy place to
 source ground on the input side. I eventually settled for sourcing this from
 the source pin of the MOSFET.
 
