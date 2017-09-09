@@ -1,0 +1,185 @@
+<html>
+<head>
+    <title>Electricity estimate tool</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.js"></script>
+    <script type="text/javascript" src="js/jquery.flot.time.js"></script>
+    <script type="text/javascript">
+        jQuery(function($){
+
+            function factor(peak, loss, capacity){
+                // We lose this much heat in a day. 1.16 wh to heat one liter
+                // of water by one degree.
+                var dT = (loss*1000)/(capacity*1.16), // temperature loss
+                    t24 = peak - dT; // temperature after 24 hours
+                    return Math.log(t24/peak)/1440; // cooling factor k
+            }
+
+            function temp(peak, loss, capacity, k, t){
+                return peak * Math.pow(Math.E, k*t);
+            }
+
+            function plot(e){
+                var loss = +$('[name="loss"]').val(),             // standing loss in kwh
+                    thermostat = +$('[name="thermostat"]').val(), // thermostat setting, in centigrade
+                    element = +$('[name="element"]').val(),       // rating of electric element
+                    capacity = +$('[name="capacity"]').val(),     // Geyser capacity, in liter
+                    ambient = +$('[name="ambient"]').val(),       // Ambient water temperature
+                    hours = +$('[name="hours"]').val(),           // Work it out over these many hours
+                    peak = thermostat - ambient;
+
+                var k = factor(65-20, loss, capacity),       // standing loss measured at 65 degrees thermostat, 20 degrees ambient.
+                    temperature = [],
+                    lost = [],
+                    energy = [],
+                    rt;
+                for (var i=0; i < 60*hours; i+=5){
+                    rt = temp(peak, loss, capacity, k, i);
+                    temperature.push([i*60000, ambient+rt]);
+                    lost.push([i*60000, 1.16*capacity*(peak-rt)/1000]);
+                    energy.push([i*60000, 1.16*capacity*rt/1000]);
+                }
+
+                // Show energy required to reheat
+                rt = temp(peak, loss, capacity, k, 60*hours);
+                var totallost = 1.16*capacity*(peak-rt)/1000;
+                $('#reheat').text(totallost.toFixed(2));
+
+                // Total time needed to reheat
+                var reheattime = totallost*60/element;
+                $('#reheattime').text(Math.round(reheattime));
+
+                // Total cycle time
+                var cycle = hours + reheattime/60;
+                $('#cycle').text(cycle.toFixed(2));
+
+                // If cycle fits in a day, work out daily cost
+                if(cycle < 24){
+                    var daily = 24*totallost/cycle;
+                    $('#daily').text(daily.toFixed(2));
+                } else {
+                    $('#daily').text('-');
+                }
+
+                $.plot('#temperature',
+                    [
+                        {data: temperature, label: 'Temperature'},
+                        {data: lost, label: 'Energy Lost', yaxis: 2},
+                        {data: energy, label: 'Energy Remaining in tank', yaxis: 2}],
+                    {
+                        series: {
+                            lines: { show: true }
+                        },
+                        xaxis: {
+                            mode: 'time',
+                            timeformat: '%d, %H:%M'
+                        },
+                        yaxes: [
+                            {
+                                min: 0,
+                                max: thermostat+5
+                            },
+                            {
+                                min: 0,
+                                position: 'right'
+                            }
+                        ]
+                    });
+                }
+
+                $('input').on('change', plot);
+                plot();
+            });
+    </script>
+
+</head>
+<body>
+    <form>
+        <table>
+            <tr>
+                <td>
+                    Standing loss in Kilowatt-Hour over 24 hours:
+                </td>
+                <td>
+                    <input name="loss" value="2.59" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Thermostat setting (Centigrade):
+                </td>
+                <td>
+                    <input name="thermostat" value="55" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Element rating (Kilowatt):
+                </td>
+                <td>
+                    <input name="element" value="3" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Capacity (Liters):
+                </td>
+                <td>
+                    <input name="capacity" value="150" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Ambient temperature:
+                </td>
+                <td>
+                    <input name="ambient" value="15" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Number of hours before reheating
+                </td>
+                <td>
+                    <input name="hours" value="48" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Energy lost (needed to reheat)
+                </td>
+                <td>
+                    <span id="reheat"></span> KWh
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Time to reheat
+                </td>
+                <td>
+                    <span id="reheattime"></span> minutes
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Total cycle time (cooling and reheating)
+                </td>
+                <td>
+                    <span id="cycle"></span> hours
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Total daily cost (if cycle &lt; 24 hours)
+                </td>
+                <td>
+                    <span id="daily"></span> KWh
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div id="temperature" style="width:100%; height: 400px"></div>
+
+</body>
+</html>
